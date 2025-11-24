@@ -2,7 +2,7 @@
 import 'package:collection/collection.dart';
 import 'package:xml/xml.dart';
 
-import 'epub_metadata.dart';
+import 'epub_navigation_content.dart';
 import 'epub_navigation_label.dart';
 import 'epub_navigation_map.dart';
 

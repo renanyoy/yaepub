@@ -1,21 +1,17 @@
 name: yaepub
-description: "yet another epub parser"
-version: 0.0.1
+description: Yet Another epub parser
+version: 1.0.0
+# repository: https://github.com/my_org/my_repo
 
 environment:
   sdk: ^3.11.0-93.1.beta
-  flutter: ">=1.17.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
   collection: any
   path: any
   xml: any
+  archive: any
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^6.0.0
-
-
+  lints: ^6.0.0
+  test: ^1.25.6
