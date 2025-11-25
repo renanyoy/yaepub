@@ -10,6 +10,7 @@ import 'package:yaepub/src/utils.dart';
 
 import 'file.dart';
 import 'meta.dart';
+import 'spine.dart';
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21,7 +22,7 @@ class Book {
   Map<String, Bfile> files = {}; // <href,file>
   Map<String, Mfile> manifest = {}; // <id,file>
   List<Xitem> meta = [];
-  List<Xitem> spine = [];
+  List<Spine> spine = [];
   List<Xitem> guide = [];
   List<Xnav> navigation = [];
   String tocId = 'toc.ncx';
@@ -79,7 +80,16 @@ class Book {
       }
     }
     tocId = xspine.attributes.find('toc')?.value ?? 'toc.ncx';
-    spine = Xitem.parse(xspine);
+    spine = [
+      ...Xitem.parse(xspine).map((xi) {
+        final id = xi.attibutes['idref'];
+        if (id == null) throw Berror('spine error, missing idref');
+        final linear = xi.attibutes['linear'] ?? 'yes';
+        final file = manifest[id];
+        if (file == null) throw Berror('spine error, file not found id:$id');
+        return Spine(id: id, linear: linear, file: file);
+      }),
+    ];
     if (xguide != null) {
       guide = Xitem.parse(xguide);
     }
