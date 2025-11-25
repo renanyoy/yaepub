@@ -11,6 +11,7 @@ dependencies:
   path: any
   xml: any
   archive: any
+  mime_type: any
 
 dev_dependencies:
   lints: ^6.0.0

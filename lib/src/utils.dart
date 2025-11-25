@@ -20,11 +20,11 @@ extension EnumFromString<T extends Enum> on List<T> {
   }
 }
 
-XmlDocument xmlFromBytes(Uint8List bytes) =>
+XmlDocument xdocFromBytes(Uint8List bytes) =>
     XmlDocument.parse(utf8.decode(bytes));
 
 extension ArchiveFileExt on ArchiveFile {
-  XmlDocument get xml => xmlFromBytes(content);
+  XmlDocument get xml => xdocFromBytes(content);
 }
 
 String directoryFromFile({required String path}) {
@@ -52,10 +52,31 @@ String combine({required String path, required String href}) {
       href = href.substring(2);
     } else {
       href = href.substring(3);
-      final di = path!.lastIndexOf('/');
+      final di = path.lastIndexOf('/');
       if (di < 0) return href;
       path = path.substring(0, di);
     }
   }
   return '$path/$href';
+}
+
+class Berror extends Error {
+  final String message;
+  late final StackTrace stack;
+  Berror(this.message) {
+    stack = StackTrace.current;
+  }
+}
+
+enum Version {
+  v1,
+  v2,
+  v3;
+
+  static Version from({required String string}) {
+    if (string.startsWith('1.')) return v1;
+    if (string.startsWith('2.')) return v2;
+    if (string.startsWith('3.')) return v3;
+    throw Berror('version $string unimplemented');
+  }
 }
