@@ -1,11 +1,18 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:xml/xml.dart';
+import 'package:yaepub/src/utils.dart';
 
 class Xnav {
   String label;
+  String id;
   String href;
   List<Xnav> children;
-  Xnav({required this.label, required this.href, required this.children});
+  Xnav({
+    required this.label,
+    required this.id,
+    required this.href,
+    required this.children,
+  });
 
   static List<Xnav> from({required XmlElement xelem}) {
     List<Xnav> nav = [];
@@ -21,17 +28,28 @@ class Xnav {
   }
 
   static Xnav fromLi(XmlElement xe) {
-    // TODO: yop!
+    final x =
+        xe.findElements('a').firstOrNull ?? xe.findElements('span').firstOrNull;
+    final xol = xe.findElements('ol').firstOrNull;
+    final label = x?.innerText ?? x?.innerText ?? 'no name';
+    final id = x?.attributes.find('id')?.value ?? '';
+    final href = decodeUri(
+      x?.attributes.find('href')?.value ?? '',
+    ).toLowerCase();
+    final children = xol != null ? Xnav.from(xelem: xol) : <Xnav>[];
+    return Xnav(label: label, id: id, href: href, children: children);
   }
 
   static Xnav fromNavPoint(XmlElement xe) {
     final xlabel = xe.findElements('navLabel').firstOrNull;
     final xcontent = xe.findElements('content').firstOrNull;
-    final xnavpoint = xe.findElements('navPoint').firstOrNull;
     final label =
         xlabel?.firstElementChild?.value ?? xlabel?.innerText ?? 'no name';
-    final href = xcontent?.innerText.toLowerCase() ?? '';
-    final children = xnavpoint != null ? Xnav.from(xelem: xnavpoint) : null;
-    return Xnav(label: label, href: href, children: children ?? []);
+    final id = xcontent?.attributes.find('id')?.value ?? '';
+    final href = decodeUri(
+      xcontent?.attributes.find('src')?.value ?? '',
+    ).toLowerCase();
+    final children = Xnav.from(xelem: xe);
+    return Xnav(label: label, id: id, href: href, children: children);
   }
 }

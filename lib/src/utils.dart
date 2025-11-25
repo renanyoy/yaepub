@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -25,6 +26,11 @@ XmlDocument xdocFromBytes(Uint8List bytes) =>
 
 extension ArchiveFileExt on ArchiveFile {
   XmlDocument get xml => xdocFromBytes(content);
+}
+
+extension XAttrFind on Iterable<XmlAttribute> {
+  XmlAttribute? find(String name) =>
+      firstWhereOrNull((xa) => xa.name.local.toLowerCase() == name);
 }
 
 String directoryFromFile({required String path}) {
@@ -62,21 +68,20 @@ String combine({required String path, required String href}) {
 
 class Berror extends Error {
   final String message;
-  late final StackTrace stack;
-  Berror(this.message) {
-    stack = StackTrace.current;
-  }
+  Berror(this.message);
+  @override
+  String toString() => 'Berror(message: $message)';
 }
 
 enum Version {
-  v1,
-  v2,
-  v3;
+  epub1,
+  epub2,
+  epub3;
 
   static Version from({required String string}) {
-    if (string.startsWith('1.')) return v1;
-    if (string.startsWith('2.')) return v2;
-    if (string.startsWith('3.')) return v3;
+    if (string.startsWith('1.')) return epub1;
+    if (string.startsWith('2.')) return epub2;
+    if (string.startsWith('3.')) return epub3;
     throw Berror('version $string unimplemented');
   }
 }

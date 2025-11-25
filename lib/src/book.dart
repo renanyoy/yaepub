@@ -24,9 +24,9 @@ class Book {
   List<Xitem> spine = [];
   List<Xitem> guide = [];
   List<Xnav> navigation = [];
-  String tocId = 'toc';
+  String tocId = 'toc.ncx';
   Mfile? get cover => manifest[meta.find('cover')?.value ?? 'cover'];
-  Mfile? get toc => manifest[meta.find(tocId)?.value ?? 'toc.ncx'];
+  Mfile? get toc => manifest[tocId];
 
   Book({required this.archive}) {
     files = Bfile.from(archive: archive);
@@ -54,7 +54,7 @@ class Book {
     final xpackage = xdoc.findElements('package', namespace: ns).firstOrNull;
     if (xpackage == null) throw Berror('broken package');
     version = Version.from(string: xpackage.getAttribute('version') ?? '');
-    if (version == .v1) throw Berror('epub $version unimplemented');
+    if (version == .epub1) throw Berror('epub $version unimplemented');
     final xmeta = xpackage.findElements('metadata', namespace: ns).firstOrNull;
     if (xmeta == null) throw Berror('metadata missing');
     final xmanifest = xpackage
@@ -78,7 +78,7 @@ class Book {
         print('minssing $href');
       }
     }
-    tocId = xspine.attributes.find('toc')?.value ?? 'toc';
+    tocId = xspine.attributes.find('toc')?.value ?? 'toc.ncx';
     spine = Xitem.parse(xspine);
     if (xguide != null) {
       guide = Xitem.parse(xguide);

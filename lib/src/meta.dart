@@ -2,6 +2,8 @@
 import 'package:collection/collection.dart';
 import 'package:xml/xml.dart';
 
+import 'utils.dart';
+
 class Xitem {
   late final String name;
   late final String value;
@@ -31,7 +33,3 @@ extension XGetItem on Iterable<Xitem> {
   Xitem? find(String name) => firstWhereOrNull((x) => x.name == name);
 }
 
-extension XAttrFind on Iterable<XmlAttribute> {
-  XmlAttribute? find(String name) =>
-      firstWhereOrNull((xa) => xa.name.local.toLowerCase() == 'name');
-}
