@@ -16,17 +16,18 @@ import 'spine.dart';
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 class Book {
-  late String rootFilename;
-  String get rootFolder => directoryFromFile(path: rootFilename);
-  late Version version;
-  Archive archive;
+  final Archive _archive;
+  late final String _rootFilename;
+  String get _rootFolder => directoryFromFile(path: _rootFilename);
+  late final Version version;
   Map<String, Bfile> files = {}; // <href,file>
   Map<String, Mfile> manifest = {}; // <id,file>
   List<Xitem> meta = [];
   List<Spine> spine = [];
   List<Xitem> guide = [];
   List<Xnav> navigation = [];
-  String tocId = 'toc.ncx';
+  String _tocId = 'toc.ncx';
+  Mfile? get _toc => manifest[_tocId];
   String get author => meta.find(name: 'creator')?.value ?? 'Unknwown';
   String get title => meta.find(name: 'title')?.value ?? 'No name';
   String? get publisher => meta.find(name: 'publisher')?.value;
@@ -51,19 +52,18 @@ class Book {
       (meta.find(name: 'cover') != null
           ? manifest[meta.find(name: 'cover')!.value]
           : null);
-  Mfile? get toc => manifest[tocId];
-  String rootCombine(String href) =>
-      (combineHref(path: rootFolder, href: decodeUri(href)).toLowerCase());
-  Book({required this.archive}) {
-    files = Bfile.from(archive: archive);
-    rootFilename = _getRootFile(files: files);
-    final pfile = files.get(rootFilename);
-    if (pfile == null) throw Berror('package $rootFilename not found');
-    readPackage(pfile);
-    if (toc != null) readToc(toc!);
+  String _rootCombine(String href) =>
+      (combineHref(path: _rootFolder, href: decodeUri(href)).toLowerCase());
+  Book({required Archive archive}) : _archive = archive {
+    files = Bfile.from(archive: _archive);
+    _rootFilename = _getRootFile(files: files);
+    final pfile = files.get(_rootFilename);
+    if (pfile == null) throw Berror('package $_rootFilename not found');
+    _readPackage(pfile);
+    if (_toc != null) _readToc(_toc!);
   }
 
-  void readToc(Bfile file) {
+  void _readToc(Bfile file) {
     const ns = 'http://www.daisy.org/z3986/2005/ncx/';
     final xdoc = file.asXdoc;
     final xncx = xdoc.findAllElements('ncx', namespace: ns).firstOrNull;
@@ -74,7 +74,7 @@ class Book {
     }
   }
 
-  void readPackage(Bfile file) {
+  void _readPackage(Bfile file) {
     const ns = 'http://www.idpf.org/2007/opf';
     final xdoc = file.asXdoc;
     final xpackage = xdoc.findElements('package', namespace: ns).firstOrNull;
@@ -98,7 +98,7 @@ class Book {
         id = 'cover-image';
       }
       if (xman.attributes['href'] == null || id.isEmpty) continue;
-      final href = rootCombine(xman.attributes['href'] ?? '');
+      final href = _rootCombine(xman.attributes['href'] ?? '');
       final mimeType = xman.attributes['media-type'];
       if (files.containsKey(href)) {
         final mf = Mfile(file: files[href]!, id: id, mimeType: mimeType);
@@ -108,7 +108,7 @@ class Book {
         print('missing $href');
       }
     }
-    tocId = xspine.attributes.find('toc')?.value ?? 'toc.ncx';
+    _tocId = xspine.attributes.find('toc')?.value ?? 'toc.ncx';
     spine = [
       ...Xitem.parse(xspine).map((xi) {
         final id = xi.attributes['idref'];
