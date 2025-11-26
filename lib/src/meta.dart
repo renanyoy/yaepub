@@ -7,29 +7,62 @@ import 'utils.dart';
 class Xitem {
   late final String name;
   late final String value;
-  final Map<String, String> attibutes = {};
+  final Map<String, String> attributes = {};
   Xitem(XmlElement xi) {
-    final xname = xi.name.local.toLowerCase();
-    if (xname == 'meta') {
-      name = xi.attributes.find('name')!.value.toLowerCase();
-      value = xi.attributes.find('content')!.value;
-    } else {
-      name = xname.toLowerCase();
-      value = xi.innerText;
-      for (final xa in xi.attributes) {
-        final name = xa.name.local.toLowerCase();
-        final value = xa.value;
-        attibutes[name] = value;
+    final ename = xi.name.local.toLowerCase();
+    if (ename == 'meta') {
+      final property = xi.attributes.find('property');
+      final aname = xi.attributes.find('name');
+      final content = xi.attributes.find('content');
+      if (property != null) {
+        name =
+            (property.value.contains(':')
+                    ? property.value.split(':')[1]
+                    : property.value)
+                .trim();
+        value = xi.innerText.trim();
+        for (final xa in xi.attributes) {
+          final xname = xa.name.local.toLowerCase();
+          if (xname == 'property') continue;
+          attributes[xname] = xa.value.trim();
+        }
+        return;
+      } else if (aname != null && content != null) {
+        name = aname.value.toLowerCase();
+        value = content.value.trim();
+        for (final xa in xi.attributes) {
+          final xname = xa.name.local.toLowerCase();
+          if (xname == 'content') continue;
+          attributes[xname] = xa.value.trim();
+        }
+        return;
+      } else {
+        print('unimplemented meta: $xi');
       }
+    }
+    name = ename.toLowerCase();
+    value = xi.innerText.trim();
+    for (final xa in xi.attributes) {
+      final name = xa.name.local.toLowerCase();
+      attributes[name] = xa.value.trim();
     }
   }
 
   static List<Xitem> parse(XmlElement xe) => [
     ...xe.children.whereType<XmlElement>().map((x) => Xitem(x)),
   ];
+
+  @override
+  String toString() => 'Xitem(name: $name, value: $value attr: $attributes)';
 }
 
 extension XGetItem on Iterable<Xitem> {
-  Xitem? find(String name) => firstWhereOrNull((x) => x.name == name);
+  Xitem? find({required String name, String? scheme}) => firstWhereOrNull((x) {
+    if (scheme != null) {
+      return x.name == name && x.attributes['scheme'] == scheme;
+    }
+    return x.name == name;
+  });
+  Iterable<Xitem> findAll({required String name}) =>
+      where((x) => x.name == name);
 }
-

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
@@ -15,6 +16,7 @@ class Bfile {
   String get href => file.name.toLowerCase();
   Uint8List get content => file.content;
   XmlDocument get asXdoc => xdocFromBytes(content);
+  String get asText => utf8.decode(content, allowMalformed: true);  
 
   static Map<String, Bfile> from({required Archive archive}) {
     final Map<String, Bfile> map = {};

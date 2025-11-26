@@ -10,6 +10,7 @@ import 'package:yaepub/src/utils.dart';
 
 import 'file.dart';
 import 'meta.dart';
+import 'misc.dart';
 import 'spine.dart';
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -26,9 +27,33 @@ class Book {
   List<Xitem> guide = [];
   List<Xnav> navigation = [];
   String tocId = 'toc.ncx';
-  Mfile? get cover => manifest[meta.find('cover')?.value ?? 'cover'];
+  String get author => meta.find(name: 'creator')?.value ?? 'Unknwown';
+  String get title => meta.find(name: 'title')?.value ?? 'No name';
+  String? get publisher => meta.find(name: 'publisher')?.value;
+  String? get subject => meta.find(name: 'subject')?.value;
+  String? get description => meta
+      .find(name: 'description')
+      ?.value
+      .replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' ')
+      .replaceAll('    ', ' ')
+      .replaceAll('   ', ' ')
+      .replaceAll('  ', ' ').trim();
+  String? get language => meta.find(name: 'language')?.value;
+  DateTime? get date => DateTime.tryParse(meta.find(name: 'date')?.value ?? '');
+  String? get isbn => meta
+      .findAll(name: 'identifier')
+      .firstWhereOrNull((i) => i.value.startsWith('978'))
+      ?.value
+      .replaceAll('-', '');
+  String? get uuid => meta.find(name: 'identifier', scheme: 'uuid')?.value;
+  Mfile? get cover =>
+      manifest['cover-image'] ??
+      (meta.find(name: 'cover') != null
+          ? manifest[meta.find(name: 'cover')!.value]
+          : null);
   Mfile? get toc => manifest[tocId];
-
+  String rootCombine(String href) =>
+      (combineHref(path: rootFolder, href: decodeUri(href)).toLowerCase());
   Book({required this.archive}) {
     files = Bfile.from(archive: archive);
     rootFilename = _getRootFile(files: files);
@@ -55,7 +80,7 @@ class Book {
     final xpackage = xdoc.findElements('package', namespace: ns).firstOrNull;
     if (xpackage == null) throw Berror('broken package');
     version = Version.from(string: xpackage.getAttribute('version') ?? '');
-    if (version == .epub1) throw Berror('epub $version unimplemented');
+    //if (version == .epub1) throw Berror('epub $version unimplemented');
     final xmeta = xpackage.findElements('metadata', namespace: ns).firstOrNull;
     if (xmeta == null) throw Berror('metadata missing');
     final xmanifest = xpackage
@@ -67,24 +92,28 @@ class Book {
     final xguide = xpackage.findElements('guide', namespace: ns).firstOrNull;
     meta = Xitem.parse(xmeta);
     for (final xman in Xitem.parse(xmanifest)) {
-      final id = xman.attibutes['id'] ?? '';
-      final href = decodeUri(xman.attibutes['href'] ?? '').toLowerCase();
-      if (href.isEmpty || id.isEmpty) continue;
-      final mimeType = xman.attibutes['media-type'];
+      String id = xman.attributes['id'] ?? '';
+      if (xman.attributes['properties'] == 'cover-image') {
+        // special case
+        id = 'cover-image';
+      }
+      if (xman.attributes['href'] == null || id.isEmpty) continue;
+      final href = rootCombine(xman.attributes['href'] ?? '');
+      final mimeType = xman.attributes['media-type'];
       if (files.containsKey(href)) {
         final mf = Mfile(file: files[href]!, id: id, mimeType: mimeType);
         files[href] = mf;
         manifest[id] = mf;
       } else {
-        print('minssing $href');
+        print('missing $href');
       }
     }
     tocId = xspine.attributes.find('toc')?.value ?? 'toc.ncx';
     spine = [
       ...Xitem.parse(xspine).map((xi) {
-        final id = xi.attibutes['idref'];
+        final id = xi.attributes['idref'];
         if (id == null) throw Berror('spine error, missing idref');
-        final linear = xi.attibutes['linear'] ?? 'yes';
+        final linear = xi.attributes['linear'] ?? 'yes';
         final file = manifest[id];
         if (file == null) throw Berror('spine error, file not found id:$id');
         return Spine(id: id, linear: linear, file: file);
