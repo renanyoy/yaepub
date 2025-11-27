@@ -16,6 +16,7 @@ import 'spine.dart';
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 class Book {
+  final String debugRef;
   final Archive _archive;
   late final String _rootFilename;
   String get _rootFolder => directoryFromFile(path: _rootFilename);
@@ -38,7 +39,8 @@ class Book {
       .replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' ')
       .replaceAll('    ', ' ')
       .replaceAll('   ', ' ')
-      .replaceAll('  ', ' ').trim();
+      .replaceAll('  ', ' ')
+      .trim();
   String? get language => meta.find(name: 'language')?.value;
   DateTime? get date => DateTime.tryParse(meta.find(name: 'date')?.value ?? '');
   String? get isbn => meta
@@ -54,7 +56,8 @@ class Book {
           : null);
   String _rootCombine(String href) =>
       (combineHref(path: _rootFolder, href: decodeUri(href)).toLowerCase());
-  Book({required Archive archive}) : _archive = archive {
+  Book({required Archive archive, this.debugRef = 'Book'})
+    : _archive = archive {
     files = Bfile.from(archive: _archive);
     _rootFilename = _getRootFile(files: files);
     final pfile = files.get(_rootFilename);
@@ -105,7 +108,7 @@ class Book {
         files[href] = mf;
         manifest[id] = mf;
       } else {
-        print('missing ${file.href}($href)');
+        print('missing $debugRef($href)');
       }
     }
     _tocId = xspine.attributes.find('toc')?.value ?? 'toc.ncx';
@@ -124,9 +127,9 @@ class Book {
     }
   }
 
-  factory Book.from({required Uint8List bytes}) {
+  factory Book.from({required Uint8List bytes, String debugRef = 'Book.from'}) {
     final archive = ZipDecoder().decodeBytes(bytes);
-    return Book(archive: archive);
+    return Book(archive: archive, debugRef: debugRef);
   }
 
   static String _getRootFile({required Map<String, Bfile> files}) {
