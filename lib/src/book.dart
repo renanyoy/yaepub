@@ -105,7 +105,7 @@ class Book {
         files[href] = mf;
         manifest[id] = mf;
       } else {
-        print('missing $href');
+        print('missing ${file.href}($href)');
       }
     }
     _tocId = xspine.attributes.find('toc')?.value ?? 'toc.ncx';
