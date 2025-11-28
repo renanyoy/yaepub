@@ -1,8 +1,10 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
 import 'package:collection/collection.dart';
+import 'package:crypto/crypto.dart';
 import 'package:xml/xml.dart';
 import 'package:yaepub/src/nav.dart';
 
@@ -43,6 +45,14 @@ class Book {
       .trim();
   String? get language => meta.find(name: 'language')?.value;
   DateTime? get date => DateTime.tryParse(meta.find(name: 'date')?.value ?? '');
+  String get id {
+    final text = meta
+        .where((xi) => xi.value.isNotEmpty)
+        .fold(['yaepub'], (m, xi) => [...m, xi.value])
+        .join('.');
+    return md5.convert(utf8.encode(text)).toString();
+  }
+
   String? get isbn => meta
       .findAll(name: 'identifier')
       .firstWhereOrNull((i) => i.value.startsWith('978'))

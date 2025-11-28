@@ -9,6 +9,7 @@ environment:
 dependencies:
   collection: any
   path: any
+  crypto: any
   xml: any
   archive: any
   mime_type: any
