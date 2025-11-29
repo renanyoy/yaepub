@@ -139,6 +139,9 @@ class Book {
 
   factory Book.from({required Uint8List bytes, String debugRef = 'Book.from'}) {
     final archive = ZipDecoder().decodeBytes(bytes);
+    if (archive.files.isEmpty) {
+      throw Berror('no files (broken epub+zip)');
+    }
     return Book(archive: archive, debugRef: debugRef);
   }
 
