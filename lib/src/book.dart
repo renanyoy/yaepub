@@ -39,6 +39,9 @@ class Book {
       .find(name: 'description')
       ?.value
       .replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' ')
+      .replaceAll('\r\n', ' ')
+      .replaceAll('\r', ' ')
+      .replaceAll('\n', ' ')
       .replaceAll('    ', ' ')
       .replaceAll('   ', ' ')
       .replaceAll('  ', ' ')
