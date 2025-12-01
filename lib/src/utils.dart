@@ -14,13 +14,14 @@ String decodeUri(String href) {
   }
 }
 
+/*
 extension EnumFromString<T extends Enum> on List<T> {
   T? find(String value) {
     final v = '$T.$value'.toUpperCase();
     return firstWhereOrNull((f) => f.toString().toUpperCase() == v);
   }
 }
-
+*/
 XmlDocument xdocFromBytes(Uint8List bytes) =>
     XmlDocument.parse(utf8.decode(bytes));
 
