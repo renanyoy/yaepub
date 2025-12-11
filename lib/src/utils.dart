@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -6,6 +5,7 @@ import 'package:archive/archive.dart';
 import 'package:collection/collection.dart';
 import 'package:xml/xml.dart';
 
+/// Decodes a URI, returning the original string if decoding fails.
 String decodeUri(String href) {
   try {
     return Uri.decodeFull(href);
@@ -22,18 +22,24 @@ extension EnumFromString<T extends Enum> on List<T> {
   }
 }
 */
+/// Parses a byte array into an XML document.
 XmlDocument xdocFromBytes(Uint8List bytes) =>
     XmlDocument.parse(utf8.decode(bytes));
 
+/// Extension for converting an ArchiveFile to an XML document.
 extension ArchiveFileExt on ArchiveFile {
+  /// Returns the content of the file as an XML document.
   XmlDocument get xml => xdocFromBytes(content);
 }
 
+/// Extension for finding an attribute in an iterable of XML attributes.
 extension XAttrFind on Iterable<XmlAttribute> {
+  /// Finds the first attribute with the given name.
   XmlAttribute? find(String name) =>
       firstWhereOrNull((xa) => xa.name.local.toLowerCase() == name);
 }
 
+/// Returns the directory part of a file path.
 String directoryFromFile({required String path}) {
   var lastSlashIndex = path.lastIndexOf('/');
   if (lastSlashIndex == -1) {
@@ -43,6 +49,7 @@ String directoryFromFile({required String path}) {
   }
 }
 
+/// Combines a path and a href, resolving relative paths.
 String combineHref({required String path, required String href}) {
   if (path.isEmpty) {
     while (href.startsWith('../') || href.startsWith('./')) {
@@ -66,4 +73,3 @@ String combineHref({required String path, required String href}) {
   }
   return '$path/$href';
 }
-

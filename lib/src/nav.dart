@@ -1,12 +1,21 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:xml/xml.dart';
 import 'package:yaepub/src/utils.dart';
 
+/// Represents a navigation item in the EPUB's table of contents.
 class Xnav {
+  /// The label of the navigation item.
   String label;
+
+  /// The ID of the navigation item.
   String id;
+
+  /// The href of the navigation item.
   String href;
+
+  /// The children of the navigation item.
   List<Xnav> children;
+
+  /// Creates a new Xnav instance.
   Xnav({
     required this.label,
     required this.id,
@@ -14,6 +23,7 @@ class Xnav {
     required this.children,
   });
 
+  /// Parses a list of Xnav instances from an XML element.
   static List<Xnav> from({required XmlElement xelem}) {
     List<Xnav> nav = [];
     for (final xe in xelem.children.whereType<XmlElement>()) {
@@ -27,6 +37,7 @@ class Xnav {
     return nav;
   }
 
+  /// Parses an Xnav instance from an 'li' XML element.
   static Xnav fromLi(XmlElement xe) {
     final x =
         xe.findElements('a').firstOrNull ?? xe.findElements('span').firstOrNull;
@@ -40,6 +51,7 @@ class Xnav {
     return Xnav(label: label, id: id, href: href, children: children);
   }
 
+  /// Parses an Xnav instance from a 'navPoint' XML element.
   static Xnav fromNavPoint(XmlElement xe) {
     final xlabel = xe.findElements('navLabel').firstOrNull;
     final xcontent = xe.findElements('content').firstOrNull;
