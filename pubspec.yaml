@@ -2,17 +2,18 @@ name: yaepub
 description: Yet Another epub parser
 version: 1.0.0
 # repository: https://github.com/my_org/my_repo
+repository: https://github.com/renanyoy/yaepub
 
 environment:
   sdk: ">=3.10.0 <4.0.0"
 
 dependencies:
-  collection: any
-  path: any
-  crypto: any
-  xml: any
-  archive: any
-  mime_type: any
+  collection: ^1.19.1
+  path: ^1.9.1
+  crypto: ^3.0.7
+  xml: ^6.6.1
+  archive: ^4.0.9
+  mime_type: ^1.0.1
 
 dev_dependencies:
   lints: ^6.0.0
