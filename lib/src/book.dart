@@ -191,6 +191,10 @@ class Book {
     }
   }
 
+  @override
+  String toString() =>
+      'Book(title: "$title", author: "$author", language: "$language")';
+
   /// Creates a new Book instance from a byte array.
   ///
   /// The [bytes] are the raw data of the EPUB file.
