@@ -1,6 +1,6 @@
 name: yaepub
-description: Yet Another epub parser
-version: 1.0.0
+description: A simple, lightweight and robust Dart package for parsing EPUB files, extracting metadata, chapters, and content to build e-book readers.
+version: 1.0.1
 # repository: https://github.com/my_org/my_repo
 repository: https://github.com/renanyoy/yaepub
 
