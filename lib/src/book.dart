@@ -78,6 +78,15 @@ class Book {
       .replaceAll('   ', ' ')
       .replaceAll('  ', ' ')
       .trim();
+  String? get rawDescription => meta.find(name: 'description')?.value;
+  String? get crDescription => meta
+      .find(name: 'description')
+      ?.value
+      .replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' ')
+      .replaceAll('    ', ' ')
+      .replaceAll('   ', ' ')
+      .replaceAll('  ', ' ')
+      .trim();
 
   /// The language of the book.
   String? get language => meta.find(name: 'language')?.value;
@@ -120,7 +129,7 @@ class Book {
   /// The [archive] is the raw data of the EPUB file.
   /// The [debugRef] is a string for debugging purposes.
   Book({required Archive archive, this.debugRef = 'Book'})
-      : _archive = archive {
+    : _archive = archive {
     files = Bfile.from(archive: _archive);
     _rootFilename = _getRootFile(files: files);
     final pfile = files.get(_rootFilename);
@@ -151,8 +160,9 @@ class Book {
     //if (version == .epub1) throw Berror('epub $version unimplemented');
     final xmeta = xpackage.findElements('metadata', namespace: ns).firstOrNull;
     if (xmeta == null) throw Berror('metadata missing');
-    final xmanifest =
-        xpackage.findElements('manifest', namespace: ns).firstOrNull;
+    final xmanifest = xpackage
+        .findElements('manifest', namespace: ns)
+        .firstOrNull;
     if (xmanifest == null) throw Berror('manifest missing');
     final xspine = xpackage.findElements('spine', namespace: ns).firstOrNull;
     if (xspine == null) throw Berror('spine missing');
