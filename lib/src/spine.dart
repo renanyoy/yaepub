@@ -12,6 +12,9 @@ class Spine {
   /// The file associated with the spine item.
   Mfile file;
 
+  /// The href of the spine item.
+  String get href => file.href;
+
   /// Creates a new Spine instance.
   Spine({required this.id, required this.linear, required this.file});
 
