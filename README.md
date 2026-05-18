@@ -71,3 +71,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Support
 
 If you like this plugin, you can [pay me a coffee](https://ko-fi.com/aestesis).
+
+## Application using yaepub
+
+- [Codex Prime](https://aestesis.org/codexprime)
