@@ -66,7 +66,7 @@ class Book {
   /// The subject of the book.
   String? get subject => meta.find(name: 'subject')?.value;
 
-  /// The description of the book, with HTML tags removed.
+  /// The description of the book, with HTML tags removed. Use rawDescription for the full description.
   String? get description => meta
       .find(name: 'description')
       ?.value
