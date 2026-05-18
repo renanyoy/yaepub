@@ -78,15 +78,9 @@ class Book {
       .replaceAll('   ', ' ')
       .replaceAll('  ', ' ')
       .trim();
+
+  /// The full description, includes HTML tags if the EPUB includes them.
   String? get rawDescription => meta.find(name: 'description')?.value;
-  String? get crDescription => meta
-      .find(name: 'description')
-      ?.value
-      .replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' ')
-      .replaceAll('    ', ' ')
-      .replaceAll('   ', ' ')
-      .replaceAll('  ', ' ')
-      .trim();
 
   /// The language of the book.
   String? get language => meta.find(name: 'language')?.value;
