@@ -65,3 +65,16 @@ class Xnav {
     return Xnav(label: label, id: id, href: href, children: children);
   }
 }
+
+extension FlattenNavigation on Iterable<Xnav> {
+  List<Xnav> flatten({int level = 2}) {
+    final list = <Xnav>[];
+    for (final xnav in this) {
+      list.add(xnav);
+      if (level > 0) {
+        list.addAll(xnav.children.flatten(level: level - 1));
+      }
+    }
+    return list;
+  }
+}
