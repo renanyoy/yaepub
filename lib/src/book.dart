@@ -118,6 +118,17 @@ class Book {
   String _rootCombine(String href) =>
       (combineHref(path: _rootFolder, href: decodeUri(href)).toLowerCase());
 
+
+  /// Retrieves the destination Spine from Xnav TOC item
+  Spine? spineFromNav(Xnav nav) {
+    final parts = nav.href.split('#');
+    final hspine = parts[0].toLowerCase();
+    return spine.firstWhereOrNull((s) => s.href.toLowerCase() == hspine) ??
+        spine.firstWhereOrNull(
+          (s) => s.href.toLowerCase().endsWith('/$hspine'),
+        );
+  }
+
   /// Creates a new Book instance.
   ///
   /// The [archive] is the raw data of the EPUB file.
