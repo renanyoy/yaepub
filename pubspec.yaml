@@ -10,7 +10,7 @@ dependencies:
   collection: ^1.19.1
   path: ^1.9.1
   crypto: ^3.0.7
-  xml: ^6.6.1
+  xml: ^7.0.1
   archive: ^4.0.9
   mime_type: ^1.0.1
 
