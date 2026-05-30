@@ -118,7 +118,6 @@ class Book {
   String _rootCombine(String href) =>
       (combineHref(path: _rootFolder, href: decodeUri(href)).toLowerCase());
 
-
   /// Retrieves the destination Spine from Xnav TOC item
   Spine? spineFromNav(Xnav nav) {
     final parts = nav.href.split('#');
@@ -147,9 +146,9 @@ class Book {
   void _readToc(Bfile file) {
     const ns = 'http://www.daisy.org/z3986/2005/ncx/';
     final xdoc = file.asXdoc;
-    final xncx = xdoc.findAllElements('ncx', namespace: ns).firstOrNull;
+    final xncx = xdoc.findAllElements('ncx', namespaceUri: ns).firstOrNull;
     if (xncx == null) return;
-    final xnav = xncx.findElements('navMap', namespace: ns).firstOrNull;
+    final xnav = xncx.findElements('navMap', namespaceUri: ns).firstOrNull;
     if (xnav != null) {
       navigation = Xnav.from(xelem: xnav);
     }
@@ -159,19 +158,21 @@ class Book {
   void _readPackage(Bfile file) {
     const ns = 'http://www.idpf.org/2007/opf';
     final xdoc = file.asXdoc;
-    final xpackage = xdoc.findElements('package', namespace: ns).firstOrNull;
+    final xpackage = xdoc.findElements('package', namespaceUri: ns).firstOrNull;
     if (xpackage == null) throw Berror('broken package');
     version = Version.from(string: xpackage.getAttribute('version') ?? '');
     //if (version == .epub1) throw Berror('epub $version unimplemented');
-    final xmeta = xpackage.findElements('metadata', namespace: ns).firstOrNull;
+    final xmeta = xpackage
+        .findElements('metadata', namespaceUri: ns)
+        .firstOrNull;
     if (xmeta == null) throw Berror('metadata missing');
     final xmanifest = xpackage
-        .findElements('manifest', namespace: ns)
+        .findElements('manifest', namespaceUri: ns)
         .firstOrNull;
     if (xmanifest == null) throw Berror('manifest missing');
-    final xspine = xpackage.findElements('spine', namespace: ns).firstOrNull;
+    final xspine = xpackage.findElements('spine', namespaceUri: ns).firstOrNull;
     if (xspine == null) throw Berror('spine missing');
-    final xguide = xpackage.findElements('guide', namespace: ns).firstOrNull;
+    final xguide = xpackage.findElements('guide', namespaceUri: ns).firstOrNull;
     meta = Xitem.parse(xmeta);
     for (final xman in Xitem.parse(xmanifest)) {
       String id = xman.attributes['id'] ?? '';
@@ -229,7 +230,7 @@ class Book {
     final container = xdocFromBytes(fcontainer.content)
         .findElements(
           'container',
-          namespace: 'urn:oasis:names:tc:opendocument:xmlns:container',
+          namespaceUri: 'urn:oasis:names:tc:opendocument:xmlns:container',
         )
         .firstOrNull;
     if (container == null) return '';
